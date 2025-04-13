@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 
 const app = express();
 
@@ -110,6 +111,14 @@ taskRouter.delete('/tasks/delete/:id', (req, res) => {
 })
 
 app.use('/api', taskRouter);
+
+// serve static react files
+
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+})
 
 app.listen(port, () => {
     console.log('Server is running on', port);
