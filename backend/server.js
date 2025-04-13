@@ -2,6 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const PORT = process.env.PORT || 5000
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,7 +18,7 @@ app.use(cors());
 
 const taskRouter = express.Router();
 
-const port = 5000;
+// const port = 5000;
 
 const tasks = [];
 
@@ -124,6 +129,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 })
 
-app.listen(port, () => {
+app.listen(PORT, () => {
     console.log('Server is running on', port);
 })
