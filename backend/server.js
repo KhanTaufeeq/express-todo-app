@@ -1,15 +1,15 @@
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
+// import path from 'path';
+// import { fileURLToPath } from 'url';
+// import dotenv from 'dotenv';
 
-dotenv.config();
+// dotenv.config();
 
-const PORT = process.env.PORT || 5000
+// const PORT = process.env.PORT || 5000
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(cors());
 
 const taskRouter = express.Router();
 
-// const port = 5000;
+const port = 5000;
 
 const tasks = [];
 
@@ -123,12 +123,12 @@ app.use('/api', taskRouter);
 
 // serve static react files
 
-app.use(express.static(path.join(__dirname, '../client/build')));
+// app.use(express.static(path.join(__dirname, '../client/build')));
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-})
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+// })
 
-app.listen(PORT, () => {
-    console.log('Server is running on', PORT);
+app.listen(port, () => {
+    console.log('Server is running on', port);
 })
