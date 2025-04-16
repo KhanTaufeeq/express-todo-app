@@ -32,13 +32,13 @@ function App() {
         id: tasks.length === 0 ? 1 : tasks[tasks.length - 1].id + 1,
         title: taskTitle,
         description: taskDescription,
-        // Status: taskStatus,
+        Status: taskStatus,
       })
       .then((res) => {
+        fetchTask();
         setTaskTitle("");
         setTaskDescription("");
-        // setTaskStatus("");
-        fetchTask();
+        setTaskStatus("");
         console.log(res.data);
       })
       .catch((error) => console.log(error));
@@ -80,13 +80,14 @@ function App() {
   };
 
   return (
-    <div className="font-sans w-1/2 mx-auto border-2 rounded-[10px] bg-black max-w-lg p-6">
-      <h1 className="text-5xl text-gray-500 font-extrabold">
+    <div className="font-sans lg:w-1/2 mx-auto border-2 rounded-[10px] bg-black max-w-lg p-6 w-full sm:w-full">
+      <h1 className="lg:text-5xl text-gray-500 font-extrabold text-3xl">
         What todo app?...
       </h1>
       <div className="flex gap-4 justify-center flex-col mt-6 mb-15 bg-gray-900 rounded-[10px] p-2">
         <input
           type="text"
+          value={taskTitle}
           onChange={(event) => setTaskTitle(event.target.value)}
           placeholder="Enter title here..."
           required
@@ -94,11 +95,13 @@ function App() {
         />
         <input
           type="text"
+          value={taskDescription}
           onChange={(event) => setTaskDescription(event.target.value)}
           placeholder="Enter description here..."
           className="bg-black focus:bg-gray-300 p-2 rounded-[10px] outline-none placeholder:text-gray-400 text-gray-400"
         />
         <select
+          value={taskStatus}
           onChange={(e) => setTaskStatus(e.target.value)}
           required
           className="bg-black focus:bg-gray-300 p-2 rounded-[10px] outline-none placeholder:text-gray-400 text-gray-400"
@@ -136,7 +139,7 @@ function App() {
                     Edit Task
                   </button>
                   {isEdit && (
-                    <div className="fixed inset-0 bg-black/70 bg-opacity-8 backdrop-blur-none flex flex-col items-center justify-center items-center gap-10">
+                    <div className="fixed inset-0 bg-gray backdrop-blur-sm flex flex-col items-center justify-center items-center gap-10">
                       <div>
                         <input
                           type="text"
@@ -188,18 +191,18 @@ function App() {
                           <option value="completed">Completed</option>
                         </select>
                       </div>
-                      <div className="flex justify-between items-left">
+                      <div className="flex justify-between">
                         <button
                           type="submit"
                           onClick={() => updateTask(editingTask)}
-                          className="bg-[#0070DF] hover:bg-blue-700 text-white font-bold py-1 px-4 rounded cursor-pointer"
+                          className="bg-black hover:bg-blue-700 text-white font-bold py-1 px-4 rounded cursor-pointer"
                         >
                           Update
                         </button>
                         <button
                           type="button"
                           onClick={() => cancelEdit()}
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded cursor-pointer"
+                          className="bg-black hover:bg-red-700 text-white font-bold py-1 px-4 rounded cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -218,7 +221,7 @@ function App() {
             );
           })
         ) : (
-          <p className="text-2xl text-white">There is no task yet :(</p>
+          <p className="text-2xl text-white text-center">There is no task yet :(</p>
         )}
       </div>
     </div>

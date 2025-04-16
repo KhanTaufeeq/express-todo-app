@@ -1,15 +1,37 @@
 import express from 'express';
 import cors from 'cors';
-// import path from 'path';
-// import { fileURLToPath } from 'url';
-// import dotenv from 'dotenv';
+import fs from 'fs/promises';
+import path from 'path';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-// const PORT = process.env.PORT || 5000
+dotenv.config();
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
+const PORT = process.env.PORT || 5000
+
+const dataFilePath = path.join(__dirname, 'todo.json');
+
+// load todos from file
+
+const loadTodos = async () => {
+    try {
+        const data = await fs.readFile(dataFilePath, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.log(error);
+        return []
+    }
+}
+
+// save todos to file
+
+const saveTodos = async (todos) => {
+    await fs.writeFile(dataFilePath, JSON.stringify(todos, null, 2), 'utf8');
+}
 
 const app = express();
 
@@ -18,14 +40,14 @@ app.use(cors());
 
 const taskRouter = express.Router();
 
-const port = 5000;
+// const port = 5000;
 
-const tasks = [];
+// const tasks = [];
 
 // { 'id': 82, 'title': 'coding', 'description': 'done', 'Status': 'pending' },
 
-taskRouter.get('/tasks', (req, res) => {
-    const allTasks = tasks;
+taskRouter.get('/tasks', async (req, res) => {
+    const allTasks = await loadTodos();
 
     try {
         if (!allTasks) return res.status(404).json({ error: "There is no task available in database" })
@@ -54,7 +76,9 @@ taskRouter.get('/tasks/:id', (req, res) => {
     }
 })
 
-taskRouter.post('/tasks/add', (req, res) => {
+taskRouter.post('/tasks/add', async (req, res) => {
+
+    const todos = await loadTodos();
     const newTask = req.body;
 
     console.log('req.body in post',req.body);
@@ -64,9 +88,12 @@ taskRouter.post('/tasks/add', (req, res) => {
     try {
         if (!title) return res.status(400).json({ error: "title is required. please enter a title" });
 
-        tasks.push(newTask)
+        // tasks.push(newTask)
+        todos.push(newTask);
 
-        console.log('post task',tasks);
+        await saveTodos(todos);
+
+        // console.log('post task',tasks);
 
         return res.status(200).json({message: {"title": newTask.title, "description": newTask.description}})
     }
@@ -75,10 +102,11 @@ taskRouter.post('/tasks/add', (req, res) => {
     }
 })
 
-taskRouter.put('/tasks/edit/:id', (req, res) => {
+taskRouter.put('/tasks/edit/:id', async (req, res) => {
     const Id = parseInt(req.params.id);
     const newTask = req.body;
     console.log('update body', newTask);
+    const tasks = await loadTodos();
 
     try {
         if (!Id) return res.status(400).json({ error: "the id parameter is missing in the url" });
@@ -92,6 +120,8 @@ taskRouter.put('/tasks/edit/:id', (req, res) => {
         tasks[taskIndex].description = newTask.description;
         tasks[taskIndex].Status = newTask.Status;
 
+        await saveTodos(tasks);
+
         return res.status(200).json(tasks);
     }
     catch (error) {
@@ -99,9 +129,10 @@ taskRouter.put('/tasks/edit/:id', (req, res) => {
     }
 })
 
-taskRouter.delete('/tasks/delete/:id', (req, res) => {
+taskRouter.delete('/tasks/delete/:id', async (req, res) => {
     const Id = parseInt(req.params.id);
     console.log(Id);
+    const tasks = await loadTodos();
 
     try {
         if (!Id) return res.status(400).json({ error: "the id parameter is missing in the url" });
@@ -111,6 +142,8 @@ taskRouter.delete('/tasks/delete/:id', (req, res) => {
         if (taskIndex === -1) return res.status(404).json({ error: "Task not found" });
 
         tasks.splice(taskIndex, 1); // removes element and upates the original array.
+
+        await saveTodos(tasks);
 
         return res.status(200).json(tasks);
     }
@@ -129,6 +162,6 @@ app.use('/api', taskRouter);
 //     res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 // })
 
-app.listen(port, () => {
-    console.log('Server is running on', port);
+app.listen(PORT, () => {
+    console.log('Server is running on', PORT);
 })
